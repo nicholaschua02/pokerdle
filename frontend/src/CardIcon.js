@@ -7,7 +7,7 @@ const suits = {
   spades: '♠️'
 };
 
-const CardIcon = ({ card, onClick, selected, feedback, clickable = true }) => {
+const CardIcon = ({ card, onClick, selected, feedback, clickable = true, className = '' }) => {
   const handleClick = () => {
     if (clickable) {
       onClick(card);
@@ -16,7 +16,7 @@ const CardIcon = ({ card, onClick, selected, feedback, clickable = true }) => {
 
   return (
     <div
-      className={`card-icon ${feedback} ${selected ? 'selected' : ''} ${card.suit}`}
+      className={`card-icon ${feedback} ${selected ? 'selected' : ''} ${card.suit} ${className}`}
       onClick={handleClick}
     >
       {card.rank}{suits[card.suit]}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import CardIcon from './CardIcon';
+import HowToPlayModal from './HowToPlayModal';
 import './App.css';
 
 const suits = ['hearts', 'diamonds', 'clubs', 'spades'];
@@ -25,6 +26,8 @@ function App() {
   const [gameOver, setGameOver] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [showHowToPlayModal, setShowHowToPlayModal] = useState(false);
+  const [animationStage, setAnimationStage] = useState(0); // For tracking animation stage
 
   useEffect(() => {
     fetch('http://localhost:5000/cards')
@@ -45,6 +48,12 @@ function App() {
       updateHandStrength();
     }
   }, [gameState, revealStage]);
+
+  useEffect(() => {
+    if (revealStage > 0) {
+      setAnimationStage(revealStage);
+    }
+  }, [revealStage]);
 
   const handleCardClick = (card) => {
     if (gameOver) return;
@@ -81,9 +90,10 @@ function App() {
       setGuesses([...guesses, currentGuess]);
       setCurrentGuess([]);
 
-      // Progress the reveal stage
+      // Progress the reveal stage and trigger animation stage
       if (revealStage < 3) {
         setRevealStage(revealStage + 1);
+        setAnimationStage(revealStage + 1);
       } else if (revealStage === 3 && !gameOver) {
         if (feedback1 !== 'Green' || feedback2 !== 'Green') {
           setModalMessage('You lose! Better luck next time.');
@@ -226,19 +236,28 @@ function App() {
     setShowModal(false);
   };
 
+  const openHowToPlayModal = () => {
+    setShowHowToPlayModal(true);
+  };
+
+  const closeHowToPlayModal = () => {
+    setShowHowToPlayModal(false);
+  };
+
   return (
     <div className="App">
-      <h1>Hold'em Wordle</h1>
+      <h1>Pokerdle</h1>
+      <button onClick={openHowToPlayModal} className="how-to-play-button">How to Play</button>
       {gameState && (
         <>
           <div className="community-cards-section">
-            <h2>Community Cards</h2>
+            <h2>Community Cards:</h2>
             <div className="community-cards">
               {revealStage > 0 && gameState.flop.map((card, index) => (
-                <CardIcon key={index} card={card} onClick={() => { }} clickable={false} larger />
+                <CardIcon key={index} card={card} onClick={() => {}} clickable={false} className={`card-icon ${animationStage === 1 ? 'fade-in' : ''} larger`} />
               ))}
-              {revealStage > 1 && <CardIcon card={gameState.turn} onClick={() => { }} clickable={false} larger />}
-              {revealStage > 2 && <CardIcon card={gameState.river} onClick={() => { }} clickable={false} larger />}
+              {revealStage > 1 && <CardIcon card={gameState.turn} onClick={() => {}} clickable={false} className={`card-icon ${animationStage === 2 ? 'fade-in' : ''} larger`} />}
+              {revealStage > 2 && <CardIcon card={gameState.river} onClick={() => {}} clickable={false} className={`card-icon ${animationStage === 3 ? 'fade-in' : ''} larger`} />}
             </div>
             {revealStage === 1 && <p id="current">Flop revealed!</p>}
             {revealStage === 2 && <p id="current">Turn revealed!</p>}
@@ -263,6 +282,7 @@ function App() {
           </div>
           <button onClick={handleGuess} disabled={currentGuess.length !== 2 || gameOver}>Guess</button>
           <div className="guesses">
+          <h2>Previous Guesses:</h2>
             {guesses.map((guess, index) => (
               <div key={index} className="guess">
                 {guess.map((card, i) => (
@@ -273,7 +293,6 @@ function App() {
               </div>
             ))}
           </div>
-
         </>
       )}
       {showModal && (
@@ -289,6 +308,7 @@ function App() {
           </div>
         </div>
       )}
+      <HowToPlayModal show={showHowToPlayModal} onClose={closeHowToPlayModal} />
     </div>
   );
 }

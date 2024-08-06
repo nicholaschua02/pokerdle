@@ -106,11 +106,11 @@ button:disabled {
 }
 
 .Blue {
-  background-color: #00f;
+  background-color: rgb(67, 67, 255);
 }
 
 .Gray {
-  background-color: #ccc;
+  background-color: #7e7e7e;
 }
 
 /* Community Cards */
@@ -122,11 +122,13 @@ button:disabled {
   display: flex;
   justify-content: center;
   margin: 20px;
+  height: 110px;
 }
 
 .larger {
-  width: 70px;
-  height: 100px;
+  width: 80px !important;
+  height: 100% !important;
+  font-size: xx-large !important;
 }
 
 .card-icon {
@@ -145,7 +147,7 @@ button:disabled {
 }
 
 .card-icon.selected {
-  background-color: cyan;
+  background-color: cyan !important;
   transform: scale(1.1);
 }
 
@@ -156,11 +158,11 @@ button:disabled {
 }
 
 .card-icon.Gray {
-  background-color: #ccc;
+  background-color: #7e7e7e;
 }
 
 .card-icon.Blue {
-  background-color: #00f;
+  background-color: rgb(67, 67, 255);
 }
 
 .card-icon.Yellow {
@@ -243,4 +245,19 @@ button:disabled {
 
 #current {
   color: yellow;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
 }
