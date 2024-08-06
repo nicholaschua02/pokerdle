@@ -47,6 +47,7 @@ function App() {
   }, [gameState, revealStage]);
 
   const handleCardClick = (card) => {
+    if (gameOver) return;
     if (currentGuess.some(g => g.rank === card.rank && g.suit === card.suit)) {
       setCurrentGuess(currentGuess.filter(g => g.rank !== card.rank || g.suit !== card.suit));
     } else if (currentGuess.length < 2) {
@@ -68,7 +69,7 @@ function App() {
       }
 
       if (feedback1 === 'Green' && feedback2 === 'Green') {
-        setModalMessage('You guessed both cards correctly! They were: ' + gameState.hand.map(card => `${card.rank}${suitsDict[card.suit]}`).join(', '));
+        setModalMessage('You guessed both cards correctly!');
         setShowModal(true);
         setGameOver(true);
       } else if (guesses.length >= MAX_GUESSES - 1) {
@@ -85,7 +86,7 @@ function App() {
         setRevealStage(revealStage + 1);
       } else if (revealStage === 3 && !gameOver) {
         if (feedback1 !== 'Green' || feedback2 !== 'Green') {
-          setModalMessage('You have run out of guesses! The correct hand was: ' + gameState.hand.map(card => `${card.rank}${suitsDict[card.suit]}`).join(', '));
+          setModalMessage('You lose! Better luck next time.');
           setShowModal(true);
           setGameOver(true);
         }
@@ -227,9 +228,22 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Pokerdle</h1>
+      <h1>Hold'em Wordle</h1>
       {gameState && (
         <>
+          <div className="community-cards-section">
+            <h2>Community Cards</h2>
+            <div className="community-cards">
+              {revealStage > 0 && gameState.flop.map((card, index) => (
+                <CardIcon key={index} card={card} onClick={() => { }} clickable={false} larger />
+              ))}
+              {revealStage > 1 && <CardIcon card={gameState.turn} onClick={() => { }} clickable={false} larger />}
+              {revealStage > 2 && <CardIcon card={gameState.river} onClick={() => { }} clickable={false} larger />}
+            </div>
+            {revealStage === 1 && <p id="current">Flop revealed!</p>}
+            {revealStage === 2 && <p id="current">Turn revealed!</p>}
+            {revealStage === 3 && <p id="current">River revealed!</p>}
+          </div>
           <div className="hand-strength">Hand Strength: {handStrength}</div>
           <div className="card-selection">
             {suits.map(suit => (
@@ -241,6 +255,7 @@ function App() {
                     onClick={handleCardClick}
                     selected={currentGuess.some(g => g.rank === rank && g.suit === suit)}
                     feedback={getCardFeedback({ rank, suit })}
+                    clickable={!gameOver}
                   />
                 ))}
               </div>
@@ -258,13 +273,7 @@ function App() {
               </div>
             ))}
           </div>
-          <div className="community-cards"> 
-            {revealStage > 0 && gameState.flop.map((card, index) => (
-              <CardIcon key={index} card={card} onClick={() => { }} />
-            ))}
-            {revealStage > 1 && <CardIcon card={gameState.turn} onClick={() => { }} />}
-            {revealStage > 2 && <CardIcon card={gameState.river} onClick={() => { }} />}
-          </div>
+
         </>
       )}
       {showModal && (
