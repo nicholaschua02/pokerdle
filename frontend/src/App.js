@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import CardIcon from './CardIcon';
 import HowToPlayModal from './HowToPlayModal';
 import './App.css';
+import confetti from 'canvas-confetti';
+
 
 const suits = ['hearts', 'diamonds', 'clubs', 'spades'];
 
@@ -79,6 +81,7 @@ function App() {
 
       if (feedback1 === 'Green' && feedback2 === 'Green') {
         setModalMessage('You guessed both cards correctly!');
+        confetti();  // Trigger confetti animation
         setShowModal(true);
         setGameOver(true);
       } else if (guesses.length >= MAX_GUESSES - 1) {
